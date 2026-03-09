@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>藥師決策卡 需求問卷 | 社區藥局的五四三</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --primary:#2E7D6F;
+    --primary-light:#3a9d8c;
+    --primary-dark:#1e5c4f;
+    --bg:#f8f9fa;
+    --card-bg:#ffffff;
+    --text:#2d3748;
+    --text-secondary:#64748b;
+    --border:#e2e8f0;
+    --error:#e53e3e;
+    --success:#38a169;
+    --shadow:0 4px 24px rgba(0,0,0,0.06);
+    --radius:12px;
+  }
+  html{scroll-behavior:smooth;font-size:16px}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","Microsoft JhengHei",sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* Progress Bar */
+  .progress-bar{position:fixed;top:0;left:0;width:100%;height:4px;background:var(--border);z-index:1000}
+  .progress-bar .fill{height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--primary-light));transition:width .4s ease;border-radius:0 2px 2px 0}
+
+  /* Container */
+  .container{max-width:680px;margin:0 auto;padding:20px 20px 60px}
+
+  /* Hero Section */
+  .hero{
+    text-align:center;padding:60px 24px 48px;
+    background:linear-gradient(135deg,#f0fdf8 0%,#ecfdf5 50%,#f0f9ff 100%);
+    border-radius:0 0 32px 32px;margin-bottom:32px;
+    position:relative;overflow:hidden;
+  }
+  .hero::before{
+    content:'';position:absolute;top:-60px;right:-60px;
+    width:200px;height:200px;border-radius:50%;
+    background:radial-gradient(circle,rgba(46,125,111,.08),transparent 70%);
+  }
+  .hero .logo{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:28px}
+  .hero .logo-icon{
+    width:52px;height:52px;background:var(--primary);border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:24px;font-weight:700;
+    box-shadow:0 4px 12px rgba(46,125,111,.3);
+  }
+  .hero .logo-text{text-align:left}
+  .hero .logo-text h1{font-size:1.15rem;color:var(--primary-dark);font-weight:700;line-height:1.3}
+  .hero .logo-text span{font-size:.75rem;color:var(--text-secondary);letter-spacing:2px;font-weight:500}
+  .hero .intro{font-size:.95rem;color:var(--text);max-width:520px;margin:0 auto;line-height:1.9}
+  .hero .intro strong{color:var(--primary-dark)}
+  .hero .highlight{
+    margin:24px auto 0;padding:16px 20px;
+    background:rgba(46,125,111,.06);border-radius:10px;
+    border-left:3px solid var(--primary);text-align:left;
+    max-width:480px;
+  }
+  .hero .highlight p{font-size:.9rem;font-weight:600;color:var(--primary-dark);margin-bottom:4px}
+  .hero .time-badge{
+    display:inline-flex;align-items:center;gap:6px;
+    margin-top:20px;padding:6px 16px;
+    background:#fff;border-radius:20px;
+    font-size:.82rem;color:var(--text-secondary);
+    box-shadow:0 2px 8px rgba(0,0,0,.05);
+  }
+
+  /* Start Button */
+  .start-btn{
+    display:inline-flex;align-items:center;gap:8px;
+    margin-top:28px;padding:14px 36px;
+    background:var(--primary);color:#fff;
+    border:none;border-radius:28px;font-size:1rem;font-weight:600;
+    cursor:pointer;transition:all .3s;
+    box-shadow:0 4px 16px rgba(46,125,111,.3);
+  }
+  .start-btn:hover{background:var(--primary-light);transform:translateY(-2px);box-shadow:0 6px 20px rgba(46,125,111,.35)}
+
+  /* Section Divider */
+  .section-divider{
+    text-align:center;padding:40px 20px;margin:8px 0;
+    opacity:0;transform:translateY(30px);transition:all .6s ease;
+  }
+  .section-divider.visible{opacity:1;transform:translateY(0)}
+  .section-divider .badge{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:8px 20px;background:var(--primary);color:#fff;
+    border-radius:20px;font-size:.85rem;font-weight:600;
+    margin-bottom:8px;
+  }
+  .section-divider .badge .num{
+    width:22px;height:22px;background:rgba(255,255,255,.25);
+    border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:.75rem;
+  }
+  .section-divider h2{font-size:1.2rem;color:var(--text);margin-top:8px}
+
+  /* Question Card */
+  .q-card{
+    background:var(--card-bg);border-radius:var(--radius);
+    padding:32px 28px;margin-bottom:20px;
+    box-shadow:var(--shadow);border:1px solid var(--border);
+    opacity:0;transform:translateY(30px);transition:all .6s ease;
+  }
+  .q-card.visible{opacity:1;transform:translateY(0)}
+  .q-card .q-label{
+    font-size:1.05rem;font-weight:700;color:var(--text);
+    margin-bottom:6px;line-height:1.6;
+  }
+  .q-card .q-label .q-num{color:var(--primary);margin-right:4px}
+  .q-card .q-label .required{color:var(--error);margin-left:4px;font-size:.85rem}
+  .q-card .q-hint{font-size:.82rem;color:var(--text-secondary);margin-bottom:18px}
+  .q-card .q-type{font-size:.78rem;color:var(--text-secondary);margin-bottom:16px;font-weight:500}
+  .q-card .error-msg{font-size:.82rem;color:var(--error);margin-top:8px;display:none}
+
+  /* Radio & Checkbox Options */
+  .option-list{display:flex;flex-direction:column;gap:10px}
+  .option-item{
+    display:flex;align-items:center;gap:12px;
+    padding:14px 16px;border:2px solid var(--border);
+    border-radius:10px;cursor:pointer;transition:all .25s;
+    position:relative;
+  }
+  .option-item:hover{border-color:var(--primary-light);background:#f0fdf8}
+  .option-item.selected{border-color:var(--primary);background:#f0fdf8}
+  .option-item .key{
+    width:28px;height:28px;border-radius:6px;
+    background:#f1f5f9;color:var(--text-secondary);
+    display:flex;align-items:center;justify-content:center;
+    font-size:.75rem;font-weight:700;flex-shrink:0;
+    transition:all .25s;
+  }
+  .option-item.selected .key{background:var(--primary);color:#fff}
+  .option-item .label{font-size:.93rem;color:var(--text);flex:1}
+  .option-item input{position:absolute;opacity:0;pointer-events:none}
+
+  /* Other input */
+  .other-input{
+    margin-top:8px;padding:10px 14px;
+    width:100%;border:2px solid var(--border);border-radius:8px;
+    font-size:.9rem;font-family:inherit;color:var(--text);
+    transition:border-color .25s;display:none;
+  }
+  .other-input:focus{outline:none;border-color:var(--primary)}
+  .other-input.show{display:block}
+
+  /* Text Input / Textarea */
+  .text-input,.textarea-input{
+    width:100%;padding:12px 16px;
+    border:none;border-bottom:2px solid var(--border);
+    font-size:1rem;font-family:inherit;color:var(--text);
+    background:transparent;transition:border-color .25s;
+    border-radius:0;
+  }
+  .text-input:focus,.textarea-input:focus{outline:none;border-bottom-color:var(--primary)}
+  .text-input::placeholder,.textarea-input::placeholder{color:#b0bec5}
+  .textarea-input{resize:vertical;min-height:80px;line-height:1.6}
+
+  /* Email Input */
+  .email-input{
+    width:100%;padding:12px 16px;
+    border:none;border-bottom:2px solid var(--border);
+    font-size:1rem;font-family:inherit;color:var(--text);
+    background:transparent;transition:border-color .25s;
+    border-radius:0;
+  }
+  .email-input:focus{outline:none;border-bottom-color:var(--primary)}
+  .email-input::placeholder{color:#b0bec5}
+
+  /* Checkbox single */
+  .checkbox-wrap{
+    display:flex;align-items:center;gap:12px;
+    padding:12px 0;cursor:pointer;
+  }
+  .checkbox-wrap .box{
+    width:22px;height:22px;border:2px solid var(--border);border-radius:5px;
+    display:flex;align-items:center;justify-content:center;
+    transition:all .25s;flex-shrink:0;
+  }
+  .checkbox-wrap .box.checked{background:var(--primary);border-color:var(--primary)}
+  .checkbox-wrap .box.checked::after{content:'✓';color:#fff;font-size:14px;font-weight:700}
+  .checkbox-wrap span{font-size:.93rem;color:var(--text)}
+  .checkbox-wrap input{position:absolute;opacity:0;pointer-events:none}
+
+  /* Q10 Description Cards */
+  .plan-cards{display:flex;flex-direction:column;gap:16px;margin-bottom:20px}
+  .plan-card{
+    padding:18px 20px;border:2px solid var(--border);border-radius:10px;
+    background:#fafbfc;transition:all .25s;
+  }
+  .plan-card h4{font-size:.95rem;font-weight:700;color:var(--primary-dark);margin-bottom:8px}
+  .plan-card p{font-size:.84rem;color:var(--text-secondary);line-height:1.6;margin:2px 0}
+  .plan-card p::before{content:'➤ ';color:var(--primary)}
+
+  /* Form hidden section */
+  .form-section{display:none}
+  .form-section.active{display:block}
+
+  /* Submit */
+  .submit-section{text-align:center;padding:40px 20px}
+  .submit-btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:16px 48px;background:var(--primary);color:#fff;
+    border:none;border-radius:28px;font-size:1.05rem;font-weight:600;
+    cursor:pointer;transition:all .3s;
+    box-shadow:0 4px 16px rgba(46,125,111,.3);
+  }
+  .submit-btn:hover{background:var(--primary-light);transform:translateY(-2px)}
+  .submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+  .submit-btn .spinner{display:none;width:20px;height:20px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite}
+  .submit-btn.loading .spinner{display:block}
+  .submit-btn.loading .btn-text{display:none}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* Thank You */
+  .thank-you{
+    text-align:center;padding:80px 24px;display:none;
+  }
+  .thank-you.show{display:block}
+  .thank-you .check-circle{
+    width:80px;height:80px;background:#f0fdf8;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    margin:0 auto 24px;font-size:36px;
+    border:3px solid var(--success);
+  }
+  .thank-you h2{font-size:1.5rem;color:var(--text);margin-bottom:12px}
+  .thank-you p{font-size:.95rem;color:var(--text-secondary);line-height:1.7}
+  .thank-you .social{margin-top:24px;font-size:.9rem;color:var(--text-secondary)}
+
+  /* Responsive */
+  @media(max-width:600px){
+    .container{padding:12px 12px 40px}
+    .hero{padding:40px 18px 36px;border-radius:0 0 24px 24px}
+    .hero .intro{font-size:.88rem}
+    .q-card{padding:24px 18px;margin-bottom:14px}
+    .q-card .q-label{font-size:.98rem}
+    .option-item{padding:12px 14px}
+    .plan-card{padding:14px 16px}
+  }
+
+  /* Animation */
+  @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-bar"><div class="fill" id="progressFill"></div></div>
+
+<!-- Hero -->
+<div class="hero" id="heroSection">
+  <div class="logo">
+    <div class="logo-icon">藥</div>
+    <div class="logo-text">
+      <h1>社區藥局的五四三</h1>
+      <span>PHARMACY 543</span>
+    </div>
+  </div>
+  <div class="intro">
+    <p>大家好，我是「社區藥局的五四三」作者，<br><strong>鄭任翔藥師</strong>。</p>
+    <br>
+    <p>經過10年鑽研保健食品實證<br>
+    以及第一線社區藥局實務銷售經驗，<br>
+    我發現多數藥師真正卡住的，其實不是「不懂實證」，<br>
+    而是在現場不知道該怎麼判斷、又該怎麼說。</p>
+    <br>
+    <p><strong>因此，我正在規劃一套專為第一線藥師設計的「藥師決策卡」，<br>
+    目的是把實證資訊轉成現場可用、能降低內耗的判斷工具。</strong></p>
+  </div>
+  <div class="highlight">
+    <p>這份3-5分鐘的問卷不涉及任何立即購買，只用來確認：</p>
+    <p>1. 哪些主題最值得優先製作</p>
+    <p>2. 什麼樣的內容深度與形式，才真的對第一線有幫助</p>
+  </div>
+  <p style="margin-top:20px;font-size:.92rem;color:var(--text-secondary)">謝謝你花時間協助我把這套工具做對方向。</p>
+  <button class="start-btn" onclick="startSurvey()">
+    開始填寫 <span style="font-size:1.1rem">→</span>
+  </button>
+  <div class="time-badge">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+    約 3-5 分鐘
+  </div>
+</div>
+
+<!-- Survey Form -->
+<div class="container" id="surveyForm" style="display:none">
+
+  <!-- === 第一部分：基本背景 === -->
+  <div class="section-divider" data-observe>
+    <div class="badge"><span class="num">1</span> 第一部分</div>
+    <h2>基本背景</h2>
+  </div>
+
+  <!-- Q1 -->
+  <div class="q-card" data-observe>
+    <div class="q-label"><span class="q-num">Q1.</span>你目前的身分最接近下列哪一項？<span class="q-type">（單選）</span><span class="required">*</span></div>
+    <div class="option-list" id="q1">
+      <label class="option-item" onclick="selectRadio(this,'q1')"><span class="key">A</span><span class="label">社區藥局第一線藥師</span><input type="radio" name="q1" value="社區藥局第一線藥師"></label>
+      <label class="option-item" onclick="selectRadio(this,'q1')"><span class="key">B</span><span class="label">社區藥局從業人員(非藥師)</span><input type="radio" name="q1" value="社區藥局從業人員(非藥師)"></label>
+      <label class="option-item" onclick="selectRadio(this,'q1')"><span class="key">C</span><span class="label">藥局負責人／管理者</span><input type="radio" name="q1" value="藥局負責人／管理者"></label>
+      <label class="option-item" onclick="selectRadio(this,'q1')"><span class="key">D</span><span class="label">診所藥師(有販售保健品)</span><input type="radio" name="q1" value="診所藥師(有販售保健品)"></label>
+      <label class="option-item" onclick="selectRadio(this,'q1')"><span class="key">E</span><span class="label">醫院或診所藥師(無販售保健品)</span><input type="radio" name="q1" value="醫院或診所藥師(無販售保健品)"></label>
+      <label class="option-item" onclick="selectRadio(this,'q1')"><span class="key">F</span><span class="label">其他醫療人員</span><input type="radio" name="q1" value="其他醫療人員"></label>
+      <label class="option-item" onclick="selectRadio(this,'q1')"><span class="key">G</span><span class="label">保健食品相關業者</span><input type="radio" name="q1" value="保健食品相關業者"></label>
+      <label class="option-item" onclick="selectRadio(this,'q1','other')"><span class="key">H</span><span class="label">其他</span><input type="radio" name="q1" value="其他"></label>
+    </div>
+    <input class="other-input" id="q1_other" placeholder="請輸入您的身分...">
+    <div class="error-msg" id="q1_err">請選擇一個選項</div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="q-card" data-observe>
+    <div class="q-label"><span class="q-num">Q2.</span>你的執業年資大約是？<span class="q-type">（單選）</span><span class="required">*</span></div>
+    <div class="option-list" id="q2">
+      <label class="option-item" onclick="selectRadio(this,'q2')"><span class="key">A</span><span class="label">0-3 年</span><input type="radio" name="q2" value="0-3 年"></label>
+      <label class="option-item" onclick="selectRadio(this,'q2')"><span class="key">B</span><span class="label">4-7 年</span><input type="radio" name="q2" value="4-7 年"></label>
+      <label class="option-item" onclick="selectRadio(this,'q2')"><span class="key">C</span><span class="label">8-15 年</span><input type="radio" name="q2" value="8-15 年"></label>
+      <label class="option-item" onclick="selectRadio(this,'q2')"><span class="key">D</span><span class="label">15 年以上</span><input type="radio" name="q2" value="15 年以上"></label>
+    </div>
+    <div class="error-msg" id="q2_err">請選擇一個選項</div>
+  </div>
+
+  <!-- === 第二部分：第一線的困境 === -->
+  <div class="section-divider" data-observe>
+    <div class="badge"><span class="num">2</span> 第二部分</div>
+    <h2>第一線的困境</h2>
+  </div>
+
+  <!-- Q3 -->
+  <div class="q-card" data-observe>
+    <div class="q-label"><span class="q-num">Q3.</span>以下哪些情境，最常讓你在第一線感到卡住？<span class="q-type">（選 3 項）</span><span class="required">*</span></div>
+    <div class="q-hint">請選擇最多 3 個選項</div>
+    <div class="option-list" id="q3">
+      <label class="option-item" onclick="selectCheckbox(this,'q3',3)"><span class="key">A</span><span class="label">顧客期待很高，希望「快一點有效」</span><input type="checkbox" name="q3" value="顧客期待很高，希望「快一點有效」"></label>
+      <label class="option-item" onclick="selectCheckbox(this,'q3',3)"><span class="key">B</span><span class="label">同類產品很多，不知道該怎麼選邊站</span><input type="checkbox" name="q3" value="同類產品很多，不知道該怎麼選邊站"></label>
+      <label class="option-item" onclick="selectCheckbox(this,'q3',3)"><span class="key">C</span><span class="label">顧客有病史／用藥，安全風險很難拿捏</span><input type="checkbox" name="q3" value="顧客有病史／用藥，安全風險很難拿捏"></label>
+      <label class="option-item" onclick="selectCheckbox(this,'q3',3)"><span class="key">D</span><span class="label">來自公司或庫存的販售壓力</span><input type="checkbox" name="q3" value="來自公司或庫存的販售壓力"></label>
+      <label class="option-item" onclick="selectCheckbox(this,'q3',3)"><span class="key">E</span><span class="label">吃了一段時間，顧客反應「沒什麼感覺」</span><input type="checkbox" name="q3" value="吃了一段時間，顧客反應「沒什麼感覺」"></label>
+      <label class="option-item" onclick="selectCheckbox(this,'q3',3)"><span class="key">F</span><span class="label">廠商介紹產品時，不確定該信到哪裡</span><input type="checkbox" name="q3" value="廠商介紹產品時，不確定該信到哪裡"></label>
+      <label class="option-item" onclick="selectCheckbox(this,'q3',3,'other')"><span class="key">G</span><span class="label">其他</span><input type="checkbox" name="q3" value="其他"></label>
+    </div>
+    <input class="other-input" id="q3_other" placeholder="請輸入其他情境...">
+    <div class="error-msg" id="q3_err">請選擇 3 個選項</div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="q-card" data-observe>
+    <div class="q-label"><span class="q-num">Q4.</span>在這些情境中，你現在通常怎麼處理？<span class="q-type">（單選）</span><span class="required">*</span></div>
+    <div class="option-list" id="q4">
+      <label class="option-item" onclick="selectRadio(this,'q4')"><span class="key">A</span><span class="label">靠經驗與直覺判斷</span><input type="radio" name="q4" value="靠經驗與直覺判斷"></label>
+      <label class="option-item" onclick="selectRadio(this,'q4')"><span class="key">B</span><span class="label">盡量保守，少說為妙</span><input type="radio" name="q4" value="盡量保守，少說為妙"></label>
+      <label class="option-item" onclick="selectRadio(this,'q4')"><span class="key">C</span><span class="label">回去查資料，但很花時間</span><input type="radio" name="q4" value="回去查資料，但很花時間"></label>
+      <label class="option-item" onclick="selectRadio(this,'q4')"><span class="key">D</span><span class="label">跟著現場或公司主流做法</span><input type="radio" name="q4" value="跟著現場或公司主流做法"></label>
+      <label class="option-item" onclick="selectRadio(this,'q4')"><span class="key">E</span><span class="label">老實說「不確定」</span><input type="radio" name="q4" value="老實說「不確定」"></label>
+    </div>
+    <div class="error-msg" id="q4_err">請選擇一個選項</div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="q-card" data-observe>
+    <div class="q-label"><span class="q-num">Q5.</span>以下哪些健康主題，是你在第一線實際最常遇到、也最容易卡住的？<span class="q-type">（選 3 項）</span><span class="required">*</span></div>
+    <div class="q-hint">請選擇最多 3 個選項</div>
+    <div class="option-list" id="q5">
+      <label class="option-item" onclick="selectCheckbox(this,'q5',3)"><span class="key">A</span><span class="label">眼睛保養（如黃斑部、乾眼相關）</span><input type="checkbox" name="q5" value="眼睛保養（如黃斑部、乾眼相關）"></label>
+      <label class="option-item" onclick="selectCheckbox(this,'q5',3)"><span class="key">B</span><span class="label">心血管保養（如魚油、紅麴、Q10）</span><input type="checkbox" name="q5" value="心血管保養（如魚油、紅麴、Q10）"></label>
+      <label class="option-item" onclick="selectCheckbox(this,'q5',3)"><span class="key">C</span><span class="label">孕期／備孕營養</span><input type="checkbox" name="q5" value="孕期／備孕營養"></label>
+      <label class="option-item" onclick="selectCheckbox(this,'q5',3)"><span class="key">D</span><span class="label">更年期相關</span><input type="checkbox" name="q5" value="更年期相關"></label>
+      <label class="option-item" onclick="selectCheckbox(this,'q5',3)"><span class="key">E</span><span class="label">消化系統（腸胃、益生菌）</span><input type="checkbox" name="q5" value="消化系統（腸胃、益生菌）"></label>
+      <label class="option-item" onclick="selectCheckbox(this,'q5',3)"><span class="key">F</span><span class="label">關節問題</span><input type="checkbox" name="q5" value="關節問題"></label>
+      <label class="option-item" onclick="selectCheckbox(this,'q5',3)"><span class="key">G</span><span class="label">睡眠問題</span><input type="checkbox" name="q5" value="睡眠問題"></label>
+      <label class="option-item" onclick="selectCheckbox(this,'q5',3,'other')"><span class="key">H</span><span class="label">其他</span><input type="checkbox" name="q5" value="其他"></label>
+    </div>
+    <input class="other-input" id="q5_other" placeholder="請輸入其他主題...">
+    <div class="error-msg" id="q5_err">請選擇 3 個選項</div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="q-card" data-observe>
+    <div class="q-label"><span class="q-num">Q6.</span>當遇到需要查詢時，您主要會採用哪種方式？<span class="q-type">（單選）</span><span class="required">*</span></div>
+    <div class="option-list" id="q6">
+      <label class="option-item" onclick="selectRadio(this,'q6')"><span class="key">A</span><span class="label">用手機/電腦快速搜尋（如Google、FB社團）</span><input type="radio" name="q6" value="用手機/電腦快速搜尋（如Google、FB社團）"></label>
+      <label class="option-item" onclick="selectRadio(this,'q6')"><span class="key">B</span><span class="label">翻閱紙本資料或參考書籍</span><input type="radio" name="q6" value="翻閱紙本資料或參考書籍"></label>
+      <label class="option-item" onclick="selectRadio(this,'q6')"><span class="key">C</span><span class="label">請教其他同事/先進</span><input type="radio" name="q6" value="請教其他同事/先進"></label>
+      <label class="option-item" onclick="selectRadio(this,'q6')"><span class="key">D</span><span class="label">依照既有經驗自行判斷</span><input type="radio" name="q6" value="依照既有經驗自行判斷"></label>
+      <label class="option-item" onclick="selectRadio(this,'q6','other')"><span class="key">E</span><span class="label">其他</span><input type="radio" name="q6" value="其他"></label>
+    </div>
+    <input class="other-input" id="q6_other" placeholder="請輸入其他方式...">
+    <div class="error-msg" id="q6_err">請選擇一個選項</div>
+  </div>
+
+  <!-- === 第三部分：對「藥師決策卡」的期待 === -->
+  <div class="section-divider" data-observe>
+    <div class="badge"><span class="num">3</span> 第三部分</div>
+    <h2>對「藥師決策卡」的期待</h2>
+  </div>
+
+  <!-- Q7 -->
+  <div class="q-card" data-observe>
+    <div class="q-label"><span class="q-num">Q7.</span>如果有一套「決策卡」，你最希望它幫你做到什麼？<span class="q-type">（選 2 項）</span><span class="required">*</span></div>
+    <div class="q-hint">請選擇最多 2 個選項</div>
+    <div class="option-list" id="q7">
+      <label class="option-item" onclick="selectCheckbox(this,'q7',2)"><span class="key">A</span><span class="label">快速判斷「這個情境適不適合用」</span><input type="checkbox" name="q7" value="快速判斷「這個情境適不適合用」"></label>
+      <label class="option-item" onclick="selectCheckbox(this,'q7',2)"><span class="key">B</span><span class="label">幫我抓住安全與風險界線</span><input type="checkbox" name="q7" value="幫我抓住安全與風險界線"></label>
+      <label class="option-item" onclick="selectCheckbox(this,'q7',2)"><span class="key">C</span><span class="label">幫我整理一句「可以直接照著念」的結論</span><input type="checkbox" name="q7" value="幫我整理一句「可以直接照著念」的結論"></label>
+      <label class="option-item" onclick="selectCheckbox(this,'q7',2)"><span class="key">D</span><span class="label">減少每次都要重新想一遍</span><input type="checkbox" name="q7" value="減少每次都要重新想一遍"></label>
+      <label class="option-item" onclick="selectCheckbox(this,'q7',2)"><span class="key">E</span><span class="label">作為團隊內部的共同參考標準</span><input type="checkbox" name="q7" value="作為團隊內部的共同參考標準"></label>
+      <label class="option-item" onclick="selectCheckbox(this,'q7',2,'other')"><span class="key">F</span><span class="label">其他</span><input type="checkbox" name="q7" value="其他"></label>
+    </div>
+    <input class="other-input" id="q7_other" placeholder="請輸入其他期望...">
+    <div class="error-msg" id="q7_err">請選擇 2 個選項</div>
+  </div>
+
+  <!-- Q8 -->
+  <div class="q-card" data-observe>
+    <div class="q-label"><span class="q-num">Q8.</span>你最不能接受的，是以下哪一種狀況？<span class="q-type">（單選）</span><span class="required">*</span></div>
+    <div class="option-list" id="q8">
+      <label class="option-item" onclick="selectRadio(this,'q8')"><span class="key">A</span><span class="label">工具太學術，用起來很慢</span><input type="radio" name="q8" value="工具太學術，用起來很慢"></label>
+      <label class="option-item" onclick="selectRadio(this,'q8')"><span class="key">B</span><span class="label">工具太簡略，怕講錯</span><input type="radio" name="q8" value="工具太簡略，怕講錯"></label>
+      <label class="option-item" onclick="selectRadio(this,'q8')"><span class="key">C</span><span class="label">工具像話術，沒有判斷空間</span><input type="radio" name="q8" value="工具像話術，沒有判斷空間"></label>
+      <label class="option-item" onclick="selectRadio(this,'q8')"><span class="key">D</span><span class="label">工具沒有清楚結論，得不到具體答案</span><input type="radio" name="q8" value="工具沒有清楚結論，得不到具體答案"></label>
+      <label class="option-item" onclick="selectRadio(this,'q8','other')"><span class="key">E</span><span class="label">其他</span><input type="radio" name="q8" value="其他"></label>
+    </div>
+    <input class="other-input" id="q8_other" placeholder="請輸入其他狀況...">
+    <div class="error-msg" id="q8_err">請選擇一個選項</div>
+  </div>
+
+  <!-- Q9 -->
+  <div class="q-card" data-observe>
+    <div class="q-label"><span class="q-num">Q9.</span>你過去在查詢過程或使用任何決策工具時，您遇過哪些困擾或期望改進的地方？<span class="q-type">（歡迎自由填寫）</span></div>
+    <textarea class="textarea-input" id="q9" placeholder="Type your answer here..." rows="3"></textarea>
+  </div>
+
+  <!-- === 第四部分：了解藥師決策卡方案 === -->
+  <div class="section-divider" data-observe>
+    <div class="badge"><span class="num">4</span> 第四部分</div>
+    <h2>了解藥師決策卡方案</h2>
+  </div>
+
+  <!-- Q10 -->
+  <div class="q-card" data-observe>
+    <div class="q-label"><span class="q-num">Q10.</span>如果未來開放「限量早鳥測試訂閱」，以下哪一種「藥師決策卡方案」最接近你會考慮的選項？<span class="q-type">（單選）</span><span class="required">*</span></div>
+    <div class="plan-cards">
+      <div class="plan-card">
+        <h4>【方案 A｜基礎情境版（約 $199-299／月）】</h4>
+        <p>涵蓋最多人選擇的 3-4 種第一線情境</p>
+        <p>每個健康主題僅提供「高勝率核心決策」</p>
+        <p>適合想先降低內耗、不追求完整覆蓋的人</p>
+      </div>
+      <div class="plan-card">
+        <h4>【方案 B｜完整情境版（約 $300-499／月）】</h4>
+        <p>每個健康主題皆包含 A-F 六大第一線情境</p>
+        <p>可同時用於櫃檯應對、進貨評估與事後判斷</p>
+        <p>適合希望「一次建好判斷框架」的藥師</p>
+      </div>
+      <div class="plan-card">
+        <h4>【方案 C｜我目前只想先了解內容，不考慮訂閱】</h4>
+      </div>
+    </div>
+    <div class="option-list" id="q10">
+      <label class="option-item" onclick="selectRadio(this,'q10')"><span class="key">A</span><span class="label">方案 A｜基礎情境版（約 $199-299／月）</span><input type="radio" name="q10" value="方案 A｜基礎情境版（約 $199-299／月）"></label>
+      <label class="option-item" onclick="selectRadio(this,'q10')"><span class="key">B</span><span class="label">方案 B｜完整情境版（約 $300-499／月）</span><input type="radio" name="q10" value="方案 B｜完整情境版（約 $300-499／月）"></label>
+      <label class="option-item" onclick="selectRadio(this,'q10')"><span class="key">C</span><span class="label">方案 C｜我目前只想先了解內容，不考慮訂閱</span><input type="radio" name="q10" value="方案 C｜我目前只想先了解內容，不考慮訂閱"></label>
+    </div>
+    <div class="error-msg" id="q10_err">請選擇一個選項</div>
+  </div>
+
+  <!-- Q11 -->
+  <div class="q-card" data-observe>
+    <div class="q-label"><span class="q-num">Q11.</span>是否願意留下email聯絡方式，以便收到後續通知？</div>
+    <input class="email-input" type="email" id="q11" placeholder="name@example.com">
+  </div>
+
+  <!-- Q12 -->
+  <div class="q-card" data-observe>
+    <div class="q-label"><span class="q-num">Q12.</span>是否願意收到藥師決策卡的測試／更新通知？</div>
+    <label class="checkbox-wrap" onclick="toggleCheckbox(this)">
+      <div class="box" id="q12_box"></div>
+      <span>我願意收到藥師決策卡的測試／更新通知</span>
+      <input type="checkbox" id="q12">
+    </label>
+  </div>
+
+  <!-- Q13 -->
+  <div class="q-card" data-observe>
+    <div class="q-label"><span class="q-num">Q13.</span>如果你願意，請用一句話告訴我：「你最希望『藥師決策卡』幫你解決的第一線困擾是什麼？」</div>
+    <textarea class="textarea-input" id="q13" placeholder="Type your answer here..." rows="3"></textarea>
+  </div>
+
+  <!-- Submit -->
+  <div class="submit-section">
+    <button class="submit-btn" id="submitBtn" onclick="submitForm()">
+      <span class="btn-text">提交問卷</span>
+      <div class="spinner"></div>
+    </button>
+    <p style="margin-top:12px;font-size:.8rem;color:var(--text-secondary)">按下即送出您的回覆</p>
+  </div>
+
+</div>
+
+<!-- Thank You Page -->
+<div class="container">
+  <div class="thank-you" id="thankYou">
+    <div class="check-circle">✓</div>
+    <h2>感謝你的填寫！</h2>
+    <p>你可以在FB、IG、Threads，追蹤「社區藥局的五四三」了解決策卡的最新進度</p>
+    <div class="social" style="margin-top:32px">
+      <p style="font-size:.85rem;color:var(--text-secondary)">你的每一個回答，都在幫助我們做出更好的工具</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== CONFIG =====
+// 請將下方 URL 替換為您的 Google Apps Script Web App URL
+const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbyyZ4-x-SDT-Crc66Drbwj1b7yurcfv_DTo54sAJHSMHI1-m9U7kNaHQ3qU-Jc6uHQcjA/exec';
+
+// ===== START SURVEY =====
+function startSurvey() {
+  document.getElementById('heroSection').style.display = 'none';
+  document.getElementById('surveyForm').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  updateProgress();
+}
+
+// ===== INTERSECTION OBSERVER (Fade-in) =====
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('[data-observe]').forEach(el => observer.observe(el));
+
+// ===== RADIO SELECT =====
+function selectRadio(el, qId, type) {
+  const container = document.getElementById(qId);
+  container.querySelectorAll('.option-item').forEach(item => item.classList.remove('selected'));
+  el.classList.add('selected');
+  el.querySelector('input').checked = true;
+
+  // Handle "other" input
+  const otherInput = document.getElementById(qId + '_other');
+  if (otherInput) {
+    if (type === 'other') {
+      otherInput.classList.add('show');
+      otherInput.focus();
+    } else {
+      otherInput.classList.remove('show');
+      otherInput.value = '';
+    }
+  }
+
+  hideError(qId);
+  updateProgress();
+}
+
+// ===== CHECKBOX SELECT (with max limit) =====
+function selectCheckbox(el, qId, maxCount, type) {
+  const input = el.querySelector('input');
+  const container = document.getElementById(qId);
+  const checkedCount = container.querySelectorAll('input:checked').length;
+
+  if (!input.checked && checkedCount >= maxCount) {
+    // Reached max, don't allow more
+    return;
+  }
+
+  input.checked = !input.checked;
+  el.classList.toggle('selected', input.checked);
+
+  // Handle "other" input
+  const otherInput = document.getElementById(qId + '_other');
+  if (otherInput && type === 'other') {
+    if (input.checked) {
+      otherInput.classList.add('show');
+      otherInput.focus();
+    } else {
+      otherInput.classList.remove('show');
+      otherInput.value = '';
+    }
+  }
+
+  hideError(qId);
+  updateProgress();
+}
+
+// ===== SINGLE CHECKBOX TOGGLE =====
+function toggleCheckbox(el) {
+  const box = el.querySelector('.box');
+  const input = el.querySelector('input');
+  input.checked = !input.checked;
+  box.classList.toggle('checked', input.checked);
+}
+
+// ===== ERROR HANDLING =====
+function showError(qId) {
+  const errEl = document.getElementById(qId + '_err');
+  if (errEl) errEl.style.display = 'block';
+}
+function hideError(qId) {
+  const errEl = document.getElementById(qId + '_err');
+  if (errEl) errEl.style.display = 'none';
+}
+
+// ===== PROGRESS BAR =====
+function updateProgress() {
+  let answered = 0;
+  const total = 10; // required questions: Q1-Q8, Q10 (9 required) + we count optional as bonus
+
+  // Check radios
+  ['q1','q2','q4','q6','q8','q10'].forEach(q => {
+    if (document.querySelector(`input[name="${q}"]:checked`)) answered++;
+  });
+  // Check checkboxes
+  ['q3','q5','q7'].forEach(q => {
+    if (document.querySelectorAll(`#${q} input:checked`).length > 0) answered++;
+  });
+  // Check optional fields
+  if (document.getElementById('q9').value.trim()) answered += 0.3;
+  if (document.getElementById('q11').value.trim()) answered += 0.2;
+  if (document.getElementById('q13').value.trim()) answered += 0.3;
+
+  const pct = Math.min(100, (answered / total) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+}
+
+// Listen to text inputs for progress
+['q9','q11','q13'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updateProgress);
+});
+
+// ===== GENERATE TOKEN =====
+function generateToken() {
+  return 'xxxx-xxxx-xxxx'.replace(/x/g, () => Math.floor(Math.random() * 16).toString(16));
+}
+
+// ===== GET VALUE HELPERS =====
+function getRadioValue(name) {
+  const checked = document.querySelector(`input[name="${name}"]:checked`);
+  if (!checked) return '';
+  let val = checked.value;
+  if (val === '其他') {
+    const otherInput = document.getElementById(name + '_other');
+    if (otherInput && otherInput.value.trim()) {
+      val = otherInput.value.trim();
+    }
+  }
+  return val;
+}
+
+function getCheckboxValues(qId) {
+  const checked = document.querySelectorAll(`#${qId} input:checked`);
+  const vals = [];
+  checked.forEach(cb => {
+    if (cb.value === '其他') {
+      const otherInput = document.getElementById(qId + '_other');
+      if (otherInput && otherInput.value.trim()) {
+        vals.push(otherInput.value.trim());
+      } else {
+        vals.push('其他');
+      }
+    } else {
+      vals.push(cb.value);
+    }
+  });
+  return vals.join(', ');
+}
+
+// ===== VALIDATE =====
+function validate() {
+  let valid = true;
+
+  // Required radio questions
+  ['q1','q2','q4','q6','q8','q10'].forEach(q => {
+    if (!document.querySelector(`input[name="${q}"]:checked`)) {
+      showError(q);
+      if (valid) {
+        document.getElementById(q).scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      valid = false;
+    }
+  });
+
+  // Required checkbox questions with min counts
+  const checkReqs = [
+    { id: 'q3', min: 1 },
+    { id: 'q5', min: 1 },
+    { id: 'q7', min: 1 },
+  ];
+  checkReqs.forEach(({ id, min }) => {
+    const count = document.querySelectorAll(`#${id} input:checked`).length;
+    if (count < min) {
+      showError(id);
+      if (valid) {
+        document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      valid = false;
+    }
+  });
+
+  return valid;
+}
+
+// ===== SUBMIT =====
+async function submitForm() {
+  if (!validate()) return;
+
+  const btn = document.getElementById('submitBtn');
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  const now = new Date();
+  const submittedAt = now.getFullYear() + '-' +
+    String(now.getMonth()+1).padStart(2,'0') + '-' +
+    String(now.getDate()).padStart(2,'0') + ' ' +
+    String(now.getHours()).padStart(2,'0') + ':' +
+    String(now.getMinutes()).padStart(2,'0') + ':' +
+    String(now.getSeconds()).padStart(2,'0');
+
+  const data = {
+    q1: getRadioValue('q1'),
+    q2: getRadioValue('q2'),
+    q3: getCheckboxValues('q3'),
+    q4: getRadioValue('q4'),
+    q5: getCheckboxValues('q5'),
+    q6: getRadioValue('q6'),
+    q7: getCheckboxValues('q7'),
+    q8: getRadioValue('q8'),
+    q9: document.getElementById('q9').value.trim(),
+    q10: getRadioValue('q10'),
+    q11: document.getElementById('q11').value.trim(),
+    q12: document.getElementById('q12').checked ? '我願意收到藥師決策卡的測試／更新通知' : '',
+    q13: document.getElementById('q13').value.trim(),
+    submittedAt: submittedAt,
+    token: generateToken()
+  };
+
+  try {
+    const response = await fetch(GOOGLE_SHEET_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    // no-cors mode always returns opaque response, treat as success
+    showThankYou();
+  } catch (err) {
+    console.error('Submit error:', err);
+    alert('提交時發生錯誤，請稍後再試。');
+    btn.classList.remove('loading');
+    btn.disabled = false;
+  }
+}
+
+function showThankYou() {
+  document.getElementById('surveyForm').style.display = 'none';
+  document.getElementById('thankYou').classList.add('show');
+  document.getElementById('progressFill').style.width = '100%';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
