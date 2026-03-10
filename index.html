@@ -400,7 +400,7 @@
 </div>
 
 <!-- Step 4: Q3 (required, checkbox max 3) -->
-<div class="step" data-required="checkbox" data-qid="q3" data-min="1" data-section="2" data-section-label="第二部分：第一線的困境">
+<div class="step" data-required="checkbox" data-qid="q3" data-min="3" data-section="2" data-section-label="第二部分：第一線的困境">
   <div class="step-inner">
     <div class="q-card">
       <div class="q-label"><span class="q-num">Q3.</span>以下哪些情境，最常讓你在第一線感到卡住？<span class="q-type">（選 3 項）</span><span class="required">*</span></div>
@@ -415,7 +415,7 @@
         <label class="option-item" onclick="selectCheckbox(this,'q3',3,'other')"><span class="key">G</span><span class="label">其他</span><input type="checkbox" name="q3" value="其他"></label>
       </div>
       <input class="other-input" id="q3_other" placeholder="請輸入其他情境...">
-      <div class="error-msg" id="q3_err">請至少選擇 1 個選項</div>
+      <div class="error-msg" id="q3_err">請選滿 3 個選項</div>
     </div>
     <div class="btn-row">
       <button class="back-btn" onclick="goPrev()">← 上一步</button>
@@ -446,7 +446,7 @@
 </div>
 
 <!-- Step 6: Q5 (required, checkbox max 3) -->
-<div class="step" data-required="checkbox" data-qid="q5" data-min="1" data-section="2" data-section-label="第二部分：第一線的困境">
+<div class="step" data-required="checkbox" data-qid="q5" data-min="3" data-section="2" data-section-label="第二部分：第一線的困境">
   <div class="step-inner">
     <div class="q-card">
       <div class="q-label"><span class="q-num">Q5.</span>以下哪些健康主題，是你在第一線實際最常遇到、也最容易卡住的？<span class="q-type">（選 3 項）</span><span class="required">*</span></div>
@@ -462,7 +462,7 @@
         <label class="option-item" onclick="selectCheckbox(this,'q5',3,'other')"><span class="key">H</span><span class="label">其他</span><input type="checkbox" name="q5" value="其他"></label>
       </div>
       <input class="other-input" id="q5_other" placeholder="請輸入其他主題...">
-      <div class="error-msg" id="q5_err">請至少選擇 1 個選項</div>
+      <div class="error-msg" id="q5_err">請選滿 3 個選項</div>
     </div>
     <div class="btn-row">
       <button class="back-btn" onclick="goPrev()">← 上一步</button>
@@ -508,7 +508,7 @@
 </div>
 
 <!-- Step 9: Q7 (required, checkbox max 2) -->
-<div class="step" data-required="checkbox" data-qid="q7" data-min="1" data-section="3" data-section-label="第三部分：對「藥師決策卡」的期待">
+<div class="step" data-required="checkbox" data-qid="q7" data-min="2" data-section="3" data-section-label="第三部分：對「藥師決策卡」的期待">
   <div class="step-inner">
     <div class="q-card">
       <div class="q-label"><span class="q-num">Q7.</span>如果有一套「決策卡」，你最希望它幫你做到什麼？<span class="q-type">（選 2 項）</span><span class="required">*</span></div>
@@ -522,7 +522,7 @@
         <label class="option-item" onclick="selectCheckbox(this,'q7',2,'other')"><span class="key">F</span><span class="label">其他</span><input type="checkbox" name="q7" value="其他"></label>
       </div>
       <input class="other-input" id="q7_other" placeholder="請輸入其他期望...">
-      <div class="error-msg" id="q7_err">請至少選擇 1 個選項</div>
+      <div class="error-msg" id="q7_err">請選滿 2 個選項</div>
     </div>
     <div class="btn-row">
       <button class="back-btn" onclick="goPrev()">← 上一步</button>
@@ -736,6 +736,13 @@ function validateCurrentStep() {
     const min = parseInt(step.dataset.min) || 1;
     const count = document.querySelectorAll(`#${qId} input:checked`).length;
     if (count < min) {
+      const errEl = document.getElementById(qId + '_err');
+      if (errEl) {
+        const remaining = min - count;
+        errEl.textContent = count === 0
+          ? `請選擇 ${min} 個選項`
+          : `還需選擇 ${remaining} 個選項（已選 ${count}/${min}）`;
+      }
       showError(qId);
       return false;
     }
@@ -830,6 +837,25 @@ function selectCheckbox(el, qId, maxCount, type) {
     }
   }
   hideError(qId);
+  updateCheckboxCounter(qId, maxCount);
+}
+
+function updateCheckboxCounter(qId, max) {
+  const count = document.querySelectorAll(`#${qId} input:checked`).length;
+  let counter = document.getElementById(qId + '_counter');
+  if (!counter) {
+    counter = document.createElement('div');
+    counter.id = qId + '_counter';
+    counter.style.cssText = 'font-size:.82rem;margin-top:8px;font-weight:600;transition:color .2s';
+    document.getElementById(qId).parentNode.insertBefore(counter, document.getElementById(qId + '_other') || document.getElementById(qId + '_err'));
+  }
+  if (count === 0) {
+    counter.style.display = 'none';
+  } else {
+    counter.style.display = 'block';
+    counter.style.color = count === max ? 'var(--success)' : 'var(--primary)';
+    counter.textContent = `已選 ${count}/${max}` + (count === max ? ' ✓' : '');
+  }
 }
 
 // ===== SINGLE CHECKBOX TOGGLE =====
