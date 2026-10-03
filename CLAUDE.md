@@ -16,7 +16,7 @@
 3. **第三部分：對「藥師決策卡」的期待** (Q7-Q9)
 4. **第四部分：了解藥師決策卡方案** (Q10-Q13)
 
-## Google Sheets 欄位對應 (共 15 欄)
+## Google Sheets 欄位對應 (共 18 欄)
 | 欄位 | 內容 |
 |------|------|
 | A | Q1 身分 |
@@ -34,6 +34,9 @@
 | M | Q13 一句話期望 |
 | N | Submitted At |
 | O | Token |
+| P | utm_source |
+| Q | utm_campaign |
+| R | utm_content |
 
 ## 設計規範
 - 品牌色：綠色系 (#2E7D6F 主色)，搭配淺灰背景
