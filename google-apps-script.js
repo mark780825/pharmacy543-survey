@@ -36,7 +36,10 @@ function doPost(e) {
         'Q12. 是否願意收到藥師決策卡的測試／更新通知？',
         'Q13. 如果你願意，請用一句話告訴我：「你最希望『藥師決策卡』幫你解決的第一線困擾是什麼？」',
         'Submitted At',
-        'Token'
+        'Token',
+        'utm_source',
+        'utm_campaign',
+        'utm_content'
       ]);
     }
 
@@ -56,7 +59,10 @@ function doPost(e) {
       data.q12 || '',
       data.q13 || '',
       data.submittedAt || '',
-      data.token || ''
+      data.token || '',
+      safeCell(data.utm_source),
+      safeCell(data.utm_campaign),
+      safeCell(data.utm_content)
     ]);
 
     return ContentService
@@ -69,7 +75,11 @@ function doPost(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 }
-
+// UTM 開頭是 = + - @ 時加 '，避免被當成公式
+function safeCell(value) {
+  var text = String(value || '').slice(0, 100);
+  return /^[=+\-@]/.test(text) ? "'" + text : text;
+}
 // 處理 GET 請求（可選，用於測試）
 function doGet(e) {
   return ContentService
