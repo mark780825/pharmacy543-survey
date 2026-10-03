@@ -671,7 +671,18 @@
 <script>
 // ===== CONFIG =====
 const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbyyZ4-x-SDT-Crc66Drbwj1b7yurcfv_DTo54sAJHSMHI1-m9U7kNaHQ3qU-Jc6uHQcjA/exec';
-
+// ===== UTM =====
+// 讀取網址上的 UTM，送出時一起記錄來源
+function getUtmParams() {
+  const params = new URLSearchParams(window.location.search);
+  const pick = (key) => (params.get(key) || '').trim().slice(0, 100);
+  return {
+    utm_source: pick('utm_source'),
+    utm_campaign: pick('utm_campaign'),
+    utm_content: pick('utm_content')
+  };
+}
+const UTM_PARAMS = getUtmParams();
 // ===== STEP NAVIGATION =====
 const steps = document.querySelectorAll('.step');
 const totalSteps = steps.length;
@@ -924,7 +935,8 @@ async function submitForm() {
     q12: document.getElementById('q12').checked ? '我願意收到藥師決策卡的測試／更新通知' : '',
     q13: document.getElementById('q13').value.trim(),
     submittedAt: submittedAt,
-    token: generateToken()
+    token: generateToken(),
+    ...UTM_PARAMS
   };
 
   try {
